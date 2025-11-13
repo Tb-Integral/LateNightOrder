@@ -123,7 +123,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleCubemap_88baf73b27b14242a87f302f57a4585b_Cube_1_Cubemap:
-        m_Texture: {fileID: 8900000, guid: 6d4049257bcba7b469f2965790c707dd, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularColorMap:
