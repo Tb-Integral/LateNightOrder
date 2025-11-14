@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 7569225071932752261}
   - component: {fileID: 4032013484480545598}
   - component: {fileID: 7161990752859812132}
+  - component: {fileID: 5767431485597328023}
   m_Layer: 7
   m_Name: Cap
   m_TagString: Draggable
@@ -281,3 +282,15 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &5767431485597328023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840137090322228660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 497814304c1dc7b4fa0a155682a3ce64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Cap

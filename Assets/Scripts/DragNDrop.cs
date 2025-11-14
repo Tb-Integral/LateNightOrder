@@ -13,10 +13,13 @@ public class DragNDrop : MonoBehaviour
     [SerializeField] private Transform dragPoint;
     [SerializeField] private LayerMask defaultLayerMask;
     [SerializeField] private float rotationSpeed = 3f;
+    [SerializeField] private CupPoint cupPoint;
     private bool IsDragging;
     private KeyCode key1 = KeyCode.Mouse1;
     [SerializeField] private float dropForce = 5f;
     private Dragabble lastOutlineObject;
+    private Outline lastOutlineButton;
+    private string TagButton = "Button";
 
     // Update is called once per frame
     void Update()
@@ -26,18 +29,19 @@ public class DragNDrop : MonoBehaviour
         {
             if (hit.transform.CompareTag(Tag))
             {
+                Rigidbody rb = hit.transform.GetComponent<Rigidbody>();
+                if (rb != null && rb.isKinematic)
+                    return;
+
                 if (lastOutlineObject != null)
                 {
                     lastOutlineObject.SwitchOutlineOff();
-                    //lastOutlineObject.enabled = false;
                 }
 
                 if (!IsDragging)
                 {
                     lastOutlineObject = hit.transform.GetComponent<Dragabble>();
                     lastOutlineObject.SwitchOutlineOn();
-                    //lastOutlineObject = hit.transform.GetComponent<Outline>();
-                    //lastOutlineObject.enabled = true;
                 }
 
                 if (Input.GetKeyDown(key0))
@@ -46,12 +50,31 @@ public class DragNDrop : MonoBehaviour
                     IsDragging = true;
                 }
             }
+            else if (hit.transform.CompareTag(TagButton))
+            {
+                if (cupPoint != null && cupPoint.IsThereCup && !cupPoint.IsCoffePoured)
+                {
+                    lastOutlineButton = hit.transform.GetComponent<Outline>();
+                    lastOutlineButton.enabled = true;
+
+                    if (Input.GetKeyDown(key0))
+                        hit.transform.GetComponent<MakingCoffe>().StartMakingCoffe();
+                }
+            }
+
         }
-        else if (lastOutlineObject != null)
+        else if (lastOutlineObject != null || lastOutlineButton != null)
         {
-            //lastOutlineObject.enabled = false;
-            lastOutlineObject.SwitchOutlineOff();
-            lastOutlineObject = null;
+            if (lastOutlineObject != null)
+            {
+                lastOutlineObject.SwitchOutlineOff();
+                lastOutlineObject = null;
+            }
+            if (lastOutlineButton != null)
+            {
+                lastOutlineButton.enabled = false;
+                lastOutlineButton = null;   
+            }
         }
 
         if (Input.GetKeyUp(key0) && draggableObject != null)

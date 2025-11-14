@@ -46,12 +46,14 @@ public class Dragabble : MonoBehaviour
 
     public void SwitchOutlineOn()
     {
-        outline.enabled = true;
+        if (outline != null)
+            outline.enabled = true;
     }
 
     public void SwitchOutlineOff()
     {
-        outline.enabled = false;
+        if (outline != null)
+            outline.enabled = false;
     }
 
     // если сразу делать простую физику столкновений после броска, то предметы могут иногда падать сквозь пол,
