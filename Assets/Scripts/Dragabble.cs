@@ -1,18 +1,26 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Dragabble : MonoBehaviour
 {
+    [SerializeField] private Transform additionalMesh;
     private Rigidbody rb;
     private Outline outline;
-    private int defaultLayerMask = 0;
-    private int dragLayerMask = 7;
+    private bool IsFalling;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        outline = GetComponent<Outline>();
+        // у крышки плохо отображается аутлайн, поэтому берем его дочерний цилиндр для этого
+        if (additionalMesh != null)
+        {
+            outline = additionalMesh.GetComponent<Outline>();
+        }
+        else
+        {
+            outline = GetComponent<Outline>();
+        }
         outline.enabled = false;
     }
 
@@ -21,23 +29,39 @@ public class Dragabble : MonoBehaviour
         rb.useGravity = false;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         outline.enabled = false;
-        gameObject.layer = defaultLayerMask;
-        Debug.Log("объект приготовлен");
     }
 
     public void DropPrepare()
     {
         rb.useGravity = true;
-        rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
-        gameObject.layer = dragLayerMask;
+        IsFalling = true;
     }
 
     public void DropWithForcePrepare(Vector3 direction, float force)
     {
         rb.useGravity = true;
-        rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
-        gameObject.layer = dragLayerMask;
-
+        IsFalling = true;
         rb.AddForce(direction * force, ForceMode.Impulse);
+    }
+
+    public void SwitchOutlineOn()
+    {
+        outline.enabled = true;
+    }
+
+    public void SwitchOutlineOff()
+    {
+        outline.enabled = false;
+    }
+
+    // если сразу делать простую физику столкновений после броска, то предметы могут иногда падать сквозь пол,
+    // поэтому нужно сохранять ее сложной до тех пор, пока предмет впервые после броска не столкнется с преградой
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (IsFalling)
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            IsFalling = false;
+        }
     }
 }

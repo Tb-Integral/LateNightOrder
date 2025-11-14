@@ -6371,11 +6371,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4609783513747169221, guid: 3a75eadb51a4e524db61bb0f5b10507c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.07119998
+      value: -0.0712
       objectReference: {fileID: 0}
     - target: {fileID: 4609783513747169221, guid: 3a75eadb51a4e524db61bb0f5b10507c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.4396
       objectReference: {fileID: 0}
     - target: {fileID: 4609783513747169221, guid: 3a75eadb51a4e524db61bb0f5b10507c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8375,6 +8375,30 @@ PrefabInstance:
     - target: {fileID: 1030975311, guid: abc00000000008965007600174189720, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138612044238679080, guid: abc00000000008965007600174189720, type: 3}
+      propertyPath: m_Size.x
+      value: 0.3318823
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138612044238679080, guid: abc00000000008965007600174189720, type: 3}
+      propertyPath: m_Size.y
+      value: 0.33342478
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138612044238679080, guid: abc00000000008965007600174189720, type: 3}
+      propertyPath: m_Size.z
+      value: 0.3325746
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138612044238679080, guid: abc00000000008965007600174189720, type: 3}
+      propertyPath: m_Center.x
+      value: -0.002925135
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138612044238679080, guid: abc00000000008965007600174189720, type: 3}
+      propertyPath: m_Center.y
+      value: 0.16826545
+      objectReference: {fileID: 0}
+    - target: {fileID: 4138612044238679080, guid: abc00000000008965007600174189720, type: 3}
+      propertyPath: m_Center.z
+      value: 0.017131656
       objectReference: {fileID: 0}
     - target: {fileID: 8354627074614029289, guid: abc00000000008965007600174189720, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -11390,7 +11414,7 @@ Transform:
   m_GameObject: {fileID: 686087358}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14972,7 +14996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 045057ae3ff2bca428890ced37cf0494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 3
+  moveSpeed: 2
   playerCamera: {fileID: 225980355}
   mouseSensitivity: 2
   maxLookAngle: 80

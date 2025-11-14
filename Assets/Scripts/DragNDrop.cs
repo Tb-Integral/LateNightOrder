@@ -16,7 +16,7 @@ public class DragNDrop : MonoBehaviour
     private bool IsDragging;
     private KeyCode key1 = KeyCode.Mouse1;
     [SerializeField] private float dropForce = 5f;
-    private Outline lastOutlineObject;
+    private Dragabble lastOutlineObject;
 
     // Update is called once per frame
     void Update()
@@ -28,13 +28,16 @@ public class DragNDrop : MonoBehaviour
             {
                 if (lastOutlineObject != null)
                 {
-                    lastOutlineObject.enabled = false;
+                    lastOutlineObject.SwitchOutlineOff();
+                    //lastOutlineObject.enabled = false;
                 }
 
                 if (!IsDragging)
                 {
-                    lastOutlineObject = hit.transform.GetComponent<Outline>();
-                    lastOutlineObject.enabled = true;
+                    lastOutlineObject = hit.transform.GetComponent<Dragabble>();
+                    lastOutlineObject.SwitchOutlineOn();
+                    //lastOutlineObject = hit.transform.GetComponent<Outline>();
+                    //lastOutlineObject.enabled = true;
                 }
 
                 if (Input.GetKeyDown(key0))
@@ -46,7 +49,8 @@ public class DragNDrop : MonoBehaviour
         }
         else if (lastOutlineObject != null)
         {
-            lastOutlineObject.enabled = false;
+            //lastOutlineObject.enabled = false;
+            lastOutlineObject.SwitchOutlineOff();
             lastOutlineObject = null;
         }
 
