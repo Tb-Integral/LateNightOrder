@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CupPoint : MonoBehaviour
@@ -6,6 +7,7 @@ public class CupPoint : MonoBehaviour
     public Transform currentCup;
     public GameObject lastCap;
     [HideInInspector]
+    public bool IsCoffeStartPouring = false;
     public bool IsCoffePoured = false;
     public bool HasCap = false;
     public bool cupInZone = false;
@@ -21,7 +23,8 @@ public class CupPoint : MonoBehaviour
                     other.transform.position = transform.position;
                     other.transform.rotation = Quaternion.Euler(-90, 0, 0);
                     other.gameObject.layer = default;
-                    other.GetComponent<Rigidbody>().isKinematic = true;
+                    Destroy(other.GetComponent<Dragabble>());
+                    Destroy(other.GetComponent<Rigidbody>());
                     IsThereCup = true;
                     currentCup = other.transform;
                     cupInZone = true;
@@ -30,7 +33,6 @@ public class CupPoint : MonoBehaviour
         }
         else if (other.transform.GetComponent<Cap>() != null && IsCoffePoured && !HasCap)
         {
-            other.gameObject.layer = 0;
             other.tag = "Untagged";
             Destroy(other.transform.GetComponent<Dragabble>());
             Destroy(other.transform.GetComponent<Rigidbody>());
@@ -39,8 +41,8 @@ public class CupPoint : MonoBehaviour
             other.transform.SetParent(currentCup);
             HasCap = true;
 
-            currentCup.GetComponent<Rigidbody>().isKinematic = false;
-            Debug.Log($"Cup kinematic set to: {currentCup.GetComponent<Rigidbody>().isKinematic}");
+            currentCup.AddComponent<Dragabble>();
+            currentCup.AddComponent<Rigidbody>();
             currentCup.tag = "Draggable";
             currentCup.gameObject.layer = LayerMask.NameToLayer("Draggable");
         }
@@ -53,6 +55,7 @@ public class CupPoint : MonoBehaviour
             IsThereCup = false;
             lastCap = currentCup.gameObject;
             currentCup = null;
+            IsCoffeStartPouring = false;
             IsCoffePoured = false;
             HasCap = false;
             cupInZone = false;

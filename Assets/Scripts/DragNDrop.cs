@@ -29,9 +29,6 @@ public class DragNDrop : MonoBehaviour
         {
             if (hit.transform.CompareTag(Tag))
             {
-                Rigidbody rb = hit.transform.GetComponent<Rigidbody>();
-                if (rb != null && rb.isKinematic)
-                    return;
 
                 if (lastOutlineObject != null)
                 {
@@ -52,7 +49,7 @@ public class DragNDrop : MonoBehaviour
             }
             else if (hit.transform.CompareTag(TagButton))
             {
-                if (cupPoint != null && cupPoint.IsThereCup && !cupPoint.IsCoffePoured)
+                if (cupPoint != null && cupPoint.IsThereCup && !cupPoint.IsCoffeStartPouring)
                 {
                     lastOutlineButton = hit.transform.GetComponent<Outline>();
                     lastOutlineButton.enabled = true;
@@ -60,6 +57,9 @@ public class DragNDrop : MonoBehaviour
                     if (Input.GetKeyDown(key0))
                         hit.transform.GetComponent<MakingCoffe>().StartMakingCoffe();
                 }
+                Debug.Log(cupPoint);
+                Debug.Log(cupPoint.IsThereCup);
+                Debug.Log(!cupPoint.IsCoffeStartPouring);
             }
 
         }
@@ -107,20 +107,26 @@ public class DragNDrop : MonoBehaviour
 
     private void Drag()
     {
-        //перемещение
-        Vector3 direction = dragPoint.position - draggableObject.transform.position;
-        rbDraggableObject.linearVelocity = direction * speedForDraggableObject;
+        if (rbDraggableObject != null)
+        {
+            //перемещение
+            Vector3 direction = dragPoint.position - draggableObject.transform.position;
+            rbDraggableObject.linearVelocity = direction * speedForDraggableObject;
 
-        //вращение
-        Quaternion targetRotation = Quaternion.Euler(-90f, 0f, 0f);
-        rbDraggableObject.rotation = Quaternion.Slerp(rbDraggableObject.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            //вращение
+            Quaternion targetRotation = Quaternion.Euler(-90f, 0f, 0f);
+            rbDraggableObject.rotation = Quaternion.Slerp(rbDraggableObject.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+        }
     }
 
     private void Drop()
     {
-        draggableObject.GetComponent<Dragabble>().DropPrepare();
-        draggableObject = null;
-        rbDraggableObject = null;
+        if (rbDraggableObject != null)
+        {
+            draggableObject.GetComponent<Dragabble>().DropPrepare();
+            draggableObject = null;
+            rbDraggableObject = null;
+        }
     }
 
     private void PrepareObgect(RaycastHit hit)

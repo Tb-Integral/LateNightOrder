@@ -25,11 +25,12 @@ public class MakingCoffe : MonoBehaviour
     {
         if (isMaking) return;    
         if (!cupPoint.IsThereCup) return;
-        if (cupPoint.IsCoffePoured) return;
+        if (cupPoint.IsCoffeStartPouring) return;
 
         isMaking = true;
         machineSound.Play();
         coffePng = cupPoint.currentCup.GetComponent<Cup>().coffe;
+        cupPoint.IsCoffeStartPouring = true;
 
         StartCoroutine(Wait(waitCoffePouringTime));
     }
@@ -51,6 +52,7 @@ public class MakingCoffe : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         coffePng.SetActive(true);
+        cupPoint.IsCoffePoured = true;
 
         if (machineSound.isPlaying)
         {
@@ -65,8 +67,6 @@ public class MakingCoffe : MonoBehaviour
         {
             Destroy(coffeEffect2);
         }
-
-        cupPoint.IsCoffePoured = true;
         isMaking = false;
     }
 }
