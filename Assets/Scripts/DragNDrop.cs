@@ -24,6 +24,12 @@ public class DragNDrop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        PerformRaycast();
+    }
+
+    private void PerformRaycast()
+    {
+
         RaycastHit hit;
         if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, rayLength, defaultLayerMask))
         {
@@ -73,7 +79,7 @@ public class DragNDrop : MonoBehaviour
             if (lastOutlineButton != null)
             {
                 lastOutlineButton.enabled = false;
-                lastOutlineButton = null;   
+                lastOutlineButton = null;
             }
         }
 
