@@ -41,6 +41,7 @@ public class CupPoint : MonoBehaviour
             other.transform.SetParent(currentCup);
             HasCap = true;
 
+            currentCup.transform.GetComponent<Cup>().IsCoffeDone = true;
             currentCup.AddComponent<Dragabble>();
             currentCup.AddComponent<Rigidbody>();
             currentCup.tag = "Draggable";
