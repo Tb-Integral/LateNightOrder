@@ -58,4 +58,16 @@ public class PlayerController : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
     }
+
+    public void SyncCameraRotation()
+    {
+        xRotation = playerCamera.localEulerAngles.x;
+
+        // Ќормализуем угол к диапазону [-180, 180] дл€ корректной работы Clamp
+        if (xRotation > 180f)
+            xRotation -= 360f;
+
+        // ќбеспечиваем что угол в пределах допустимого диапазона
+        xRotation = Mathf.Clamp(xRotation, -maxLookAngle, maxLookAngle);
+    }
 }

@@ -55,6 +55,14 @@ public class NPCcontroller : MonoBehaviour
                     IsWalking = false;
                     animator.SetBool("IsWalking", false);
                     needCoffe = true;
+                    if (GameManager.instance.currentNPC == 0)
+                    {
+                        UIHandler.Instance.SetDialog(transform.position, new string[] { "Кофе. Черный." });
+                    }
+                    else
+                    {
+                        UIHandler.Instance.SetDialog(transform.position, new string[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." });
+                    }
                     return;
                 }
             }

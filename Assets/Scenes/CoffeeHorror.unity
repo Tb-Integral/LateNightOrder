@@ -2405,6 +2405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 123531521}
   - component: {fileID: 123531520}
+  - component: {fileID: 123531522}
   m_Layer: 5
   m_Name: GameUI
   m_TagString: Untagged
@@ -2450,6 +2451,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &123531522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123531519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a36643dcbb43f47aa4db00bef3f649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHandler
+  textSpeed: 0.06
 --- !u!1001 &129169358
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13805,6 +13819,9 @@ MonoBehaviour:
   - {fileID: 395630576}
   - {fileID: 1986485653}
   - {fileID: 1370370036}
+  playerController: {fileID: 973482803}
+  player: {fileID: 973482807}
+  mainCamera: {fileID: 225980354}
   currentNPC: 0
 --- !u!1001 &1067526106
 PrefabInstance:
@@ -18438,7 +18455,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 0.29276434, g: 0.30988866, b: 0.4811321, a: 1}
+  m_Color: {r: 0.2000267, g: 0.26868102, b: 0.2735849, a: 1}
   m_Intensity: 6.14
   m_Range: 10
   m_SpotAngle: 30

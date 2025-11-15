@@ -63,9 +63,6 @@ public class DragNDrop : MonoBehaviour
                     if (Input.GetKeyDown(key0))
                         hit.transform.GetComponent<MakingCoffe>().StartMakingCoffe();
                 }
-                Debug.Log(cupPoint);
-                Debug.Log(cupPoint.IsThereCup);
-                Debug.Log(!cupPoint.IsCoffeStartPouring);
             }
 
         }
