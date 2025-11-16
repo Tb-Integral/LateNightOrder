@@ -27,6 +27,11 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Столкнулись: "+collision.gameObject);
+    }
+
     void Move()
     {
         float moveX = Input.GetAxisRaw("Horizontal");
