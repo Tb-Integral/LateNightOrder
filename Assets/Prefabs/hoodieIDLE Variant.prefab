@@ -496,7 +496,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  speedWalk: 1.5
+  speedWalk: 1.6
 --- !u!65 &6084652387032718290
 BoxCollider:
   m_ObjectHideFlags: 0

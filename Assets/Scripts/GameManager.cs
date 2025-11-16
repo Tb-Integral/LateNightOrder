@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
     public Color textColorNPC1;// = "#1A5524";
     public Color textColorNPC2;// = "#005FBC";
     [HideInInspector] public int currentNPC = 0;
+    [SerializeField] private AudioSource noiseSource;
+    [SerializeField] private AudioClip noiseAudio;
+    [SerializeField] private AudioSource radio;
 
 
     void Start()
@@ -102,6 +105,12 @@ public class GameManager : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public void NoiceAudio()
+    {
+        noiseSource.PlayOneShot(noiseAudio);
+        //noise
     }
 
     public void ActivatePlayer()

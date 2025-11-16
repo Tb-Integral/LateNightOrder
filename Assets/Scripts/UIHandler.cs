@@ -14,6 +14,7 @@ public class UIHandler : MonoBehaviour
     private int currentLineIndex = 0;
     private Color currentTextColor;
     private NPCcontroller currentNPC; // Для отслеживания чередующихся диалогов
+    private bool secondNPC;
 
     void Awake()
     {
@@ -93,6 +94,14 @@ public class UIHandler : MonoBehaviour
             }
             else
             {
+                if (secondNPC)
+                {
+                    GameManager.instance.NoiceAudio();
+                }
+                else
+                {
+                    secondNPC = true;
+                }
                 GameManager.instance.ActivatePlayer();
             }
         }

@@ -15,6 +15,7 @@ public class NPCcontroller : MonoBehaviour
     //private string hexColor;
     private Color textColor;
     private int NPCindex;
+    public bool IsSecondNPC => NPCindex == 1;
 
     // Диалоговые массивы
     private string[] initialDialogue; // До получения кофе

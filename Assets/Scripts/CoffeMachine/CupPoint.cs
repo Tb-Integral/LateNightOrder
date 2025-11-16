@@ -23,6 +23,7 @@ public class CupPoint : MonoBehaviour
                     other.transform.position = transform.position;
                     other.transform.rotation = Quaternion.Euler(-90, 0, 0);
                     other.gameObject.layer = default;
+                    other.GetComponent<Dragabble>().SwitchOutlineOff();
                     Destroy(other.GetComponent<Dragabble>());
                     Destroy(other.GetComponent<Rigidbody>());
                     IsThereCup = true;
@@ -34,6 +35,7 @@ public class CupPoint : MonoBehaviour
         else if (other.transform.GetComponent<Cap>() != null && IsCoffePoured && !HasCap)
         {
             other.tag = "Untagged";
+            other.GetComponent<Dragabble>().SwitchOutlineOff();
             Destroy(other.transform.GetComponent<Dragabble>());
             Destroy(other.transform.GetComponent<Rigidbody>());
             other.transform.position = currentCup.GetChild(1).transform.position;
