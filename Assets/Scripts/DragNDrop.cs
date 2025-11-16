@@ -95,9 +95,12 @@ public class DragNDrop : MonoBehaviour
 
     private void DropWithForce()
     {
-        draggableObject.GetComponent<Dragabble>().DropWithForcePrepare(playerCamera.forward, dropForce);
-        draggableObject = null;
-        rbDraggableObject = null;
+        if (rbDraggableObject != null)
+        {
+            draggableObject.GetComponent<Dragabble>().DropWithForcePrepare(playerCamera.forward, dropForce);
+            draggableObject = null;
+            rbDraggableObject = null;
+        }
     }
 
     private void FixedUpdate()

@@ -12,6 +12,7 @@ public class UIHandler : MonoBehaviour
     private bool IsDialogActive;
     private string[] currentLines;
     private int currentLineIndex = 0;
+    private Color currentTextColor;
 
     void Awake()
     {
@@ -23,10 +24,13 @@ public class UIHandler : MonoBehaviour
         centerPoint = GetComponent<UIDocument>().rootVisualElement.Q<VisualElement>("CenterPoint");
     }
 
-    public void SetDialog(Vector3 NPCPosition, string[] lines)
+    public void SetDialog(Vector3 NPCPosition, string[] lines, Color textColor)
     {
         IsDialogActive = true;
         currentLines = lines;
+        currentTextColor = textColor;
+        currentTextColor.a = 1f;
+        label.style.color = currentTextColor;
         currentLineIndex = 0;
         StartCoroutine(TypeLine());
         dialogWindow.style.display = DisplayStyle.Flex;
@@ -70,6 +74,7 @@ public class UIHandler : MonoBehaviour
         {
             currentLineIndex++;
             label.text = string.Empty;
+            label.style.color = currentTextColor;
             StartCoroutine(TypeLine());
         }
         else

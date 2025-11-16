@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private Transform player;
     [SerializeField] private Camera mainCamera;
+    public Color textColorNPC1;// = "#1A5524";
+    public Color textColorNPC2;// = "#005FBC";
     [HideInInspector] public int currentNPC = 0;
 
 

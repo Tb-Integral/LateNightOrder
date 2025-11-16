@@ -12,6 +12,10 @@ public class NPCcontroller : MonoBehaviour
     private Vector3 currentDirectional;
     private bool needCoffe;
     private bool isReturning;
+    //private string hexColor;
+    private Color textColor;
+    private int NPCindex;
+    private string[] lines;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -21,6 +25,22 @@ public class NPCcontroller : MonoBehaviour
         nextPoint = pathPoints[nextPointIndex];
         currentDirectional = (nextPoint.position - transform.position).normalized;
         IsWalking = true;
+        if (GameManager.instance.currentNPC == 0)
+        {
+            NPCindex = 0;
+            //hexColor = textColorNPC1;
+            //ColorUtility.TryParseHtmlString(hexColor, out textColor);
+            textColor = GameManager.instance.textColorNPC1;
+            lines = new string[] { "Кофе. Черный." };
+        }
+        else
+        {
+            NPCindex = 1;
+            //hexColor = textColorNPC2;
+            //ColorUtility.TryParseHtmlString(hexColor, out textColor);
+            textColor = GameManager.instance.textColorNPC2;
+            lines = new string[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." };
+        }
     }
 
     // Update is called once per frame
@@ -36,8 +56,7 @@ public class NPCcontroller : MonoBehaviour
                 if (nextPointIndex < 0)
                 {
                     IsWalking = false;
-                    animator.SetBool("IsWalking", false);
-                    if (GameManager.instance.currentNPC == 0)
+                    if (NPCindex == 0)
                     {
                         GameManager.instance.currentNPC++;
                         GameManager.instance.StartNPC2();
@@ -55,14 +74,7 @@ public class NPCcontroller : MonoBehaviour
                     IsWalking = false;
                     animator.SetBool("IsWalking", false);
                     needCoffe = true;
-                    if (GameManager.instance.currentNPC == 0)
-                    {
-                        UIHandler.Instance.SetDialog(transform.position, new string[] { "Кофе. Черный." });
-                    }
-                    else
-                    {
-                        UIHandler.Instance.SetDialog(transform.position, new string[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." });
-                    }
+                    UIHandler.Instance.SetDialog(transform.position, lines, textColor);
                     return;
                 }
             }
