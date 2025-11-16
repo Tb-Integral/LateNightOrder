@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform NPCspawnPoint;
     [SerializeField] private Transform[] paths;
     [SerializeField] private PlayerController playerController;
+    [SerializeField] private DragNDrop dragNDrop;
     [SerializeField] private Transform player;
     [SerializeField] private Camera mainCamera;
     public Color textColorNPC1;// = "#1A5524";
@@ -23,7 +24,7 @@ public class GameManager : MonoBehaviour
         StartNPC1();
     }
 
-    public void StartTarining()
+    public void StartTraining()
     {
 
     }
@@ -42,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     public void LockPlayer(Vector3 NPCPosition)
     {
+        dragNDrop.Drop();
         playerController.enabled = false;
         Vector3 npcFacePosition = NPCPosition + Vector3.up * 1.2f; //рост
         StartCoroutine(RotateTowardsNPCFace(npcFacePosition));

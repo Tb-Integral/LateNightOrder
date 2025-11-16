@@ -13,6 +13,7 @@ public class UIHandler : MonoBehaviour
     private string[] currentLines;
     private int currentLineIndex = 0;
     private Color currentTextColor;
+    private NPCcontroller currentNPC; // Для отслеживания чередующихся диалогов
 
     void Awake()
     {
@@ -24,13 +25,15 @@ public class UIHandler : MonoBehaviour
         centerPoint = GetComponent<UIDocument>().rootVisualElement.Q<VisualElement>("CenterPoint");
     }
 
-    public void SetDialog(Vector3 NPCPosition, string[] lines, Color textColor)
+    public void SetDialog(Vector3 NPCPosition, string[] lines, Color textColor, NPCcontroller npc = null)
     {
         IsDialogActive = true;
         currentLines = lines;
         currentTextColor = textColor;
         currentTextColor.a = 1f;
-        label.style.color = currentTextColor;
+        currentNPC = npc; // Сохраняем ссылку на NPC для чередующихся диалогов
+
+        label.style.color = new StyleColor(currentTextColor);
         currentLineIndex = 0;
         StartCoroutine(TypeLine());
         dialogWindow.style.display = DisplayStyle.Flex;
@@ -83,7 +86,15 @@ public class UIHandler : MonoBehaviour
             IsDialogActive = false;
             dialogWindow.style.display = DisplayStyle.None;
             centerPoint.style.display = DisplayStyle.Flex;
-            GameManager.instance.ActivatePlayer();
+
+            if (currentNPC != null)
+            {
+                currentNPC.OnDialogueComplete();
+            }
+            else
+            {
+                GameManager.instance.ActivatePlayer();
+            }
         }
     }
 }

@@ -15,7 +15,12 @@ public class NPCcontroller : MonoBehaviour
     //private string hexColor;
     private Color textColor;
     private int NPCindex;
-    private string[] lines;
+
+    // Диалоговые массивы
+    private string[] initialDialogue; // До получения кофе
+    private string[][] afterCoffeeDialogues; // Чередующиеся диалоги после кофе
+    private int currentDialogueIndex = 0;
+    private bool isPlayerSpeaking = false; // Чей сейчас ход в диалоге
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -28,18 +33,31 @@ public class NPCcontroller : MonoBehaviour
         if (GameManager.instance.currentNPC == 0)
         {
             NPCindex = 0;
-            //hexColor = textColorNPC1;
-            //ColorUtility.TryParseHtmlString(hexColor, out textColor);
             textColor = GameManager.instance.textColorNPC1;
-            lines = new string[] { "Кофе. Черный." };
+
+            initialDialogue = new string[] { "Кофе. Черный." };
+
+            afterCoffeeDialogues = new string[][] {
+            new string[] { "У вас тут тихо. Одни работаете?" },                    // NPC
+            new string[] { "Да, в эту смену один." },                             // Игрок
+            new string[] { "...", "Как удобно.", "Благодарю." }                   // NPC
+            };
         }
         else
         {
             NPCindex = 1;
-            //hexColor = textColorNPC2;
-            //ColorUtility.TryParseHtmlString(hexColor, out textColor);
             textColor = GameManager.instance.textColorNPC2;
-            lines = new string[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." };
+
+            initialDialogue = new string[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." };
+
+            afterCoffeeDialogues = new string[][] {
+            new string[] { "Машину на обочине бросил. То ли стук, то ли скрежет...", "Слушай, а ты в машинах шаришь?" }, // NPC
+            new string[] { "Нет, извините, не моё." },                                                                 // Игрок
+            new string[] { "Ясно...", "А может, тот парень, второй, разбирается? Тот, что с тобой в смене?" },         // NPC
+            new string[] { "Какой второй? Я здесь один." },                                                           // Игрок
+            new string[] { "Ну, мужик в куртке.", "Я его видел, когда подъезжал.", "Он с задней стороны здания заходил, в ту вашу дверь, что возле мусорных баков. Я подумал, ваш сотрудник." }, // NPC
+            new string[] { "...", "Секунду." }                                                                        // Игрок
+            };
         }
     }
 
@@ -74,7 +92,7 @@ public class NPCcontroller : MonoBehaviour
                     IsWalking = false;
                     animator.SetBool("IsWalking", false);
                     needCoffe = true;
-                    UIHandler.Instance.SetDialog(transform.position, lines, textColor);
+                    ShowDialogue(initialDialogue, textColor); //показываем первый диалог
                     return;
                 }
             }
@@ -102,7 +120,51 @@ public class NPCcontroller : MonoBehaviour
         {
             needCoffe = false;
             Destroy(other.gameObject);
-            StartReturnJourney();
+            StartAfterCoffeeDialogue();
+        }
+    }
+
+    private void StartAfterCoffeeDialogue()
+    {
+        currentDialogueIndex = 0;
+        ShowNextAfterCoffeeDialogue();
+    }
+
+    private void ShowNextAfterCoffeeDialogue()
+    {
+        if (currentDialogueIndex < afterCoffeeDialogues.Length)
+        {
+            // Определяем, кто говорит и какой цвет использовать
+            isPlayerSpeaking = (currentDialogueIndex % 2 == 1); // Нечетные индексы - игрок
+            Color dialogueColor = isPlayerSpeaking ? Color.white : textColor;
+
+            string[] currentDialogue = afterCoffeeDialogues[currentDialogueIndex];
+            ShowDialogue(currentDialogue, dialogueColor, true);
+        }
+        else
+        {
+            // Все диалоги завершены, начинаем возвращение
+            GameManager.instance.ActivatePlayer();
+
+            if (NPCindex == 0)
+            {
+                StartReturnJourney();
+            }
+        }
+    }
+
+    private void ShowDialogue(string[] lines, Color color, bool isAfterCoffee = false)
+    {
+        UIHandler.Instance.SetDialog(transform.position, lines, color, isAfterCoffee ? this : null);
+    }
+
+    // Вызывается из UIHandler когда заканчивается текущий диалог
+    public void OnDialogueComplete()
+    {
+        if (currentDialogueIndex < afterCoffeeDialogues.Length)
+        {
+            currentDialogueIndex++;
+            ShowNextAfterCoffeeDialogue();
         }
     }
 

@@ -12247,6 +12247,7 @@ MonoBehaviour:
   rotationSpeed: 3
   cupPoint: {fileID: 50865519}
   dropForce: 5
+  mouseInputEnabled: 1
 --- !u!1001 &975730688
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13867,10 +13868,11 @@ MonoBehaviour:
   - {fileID: 1986485653}
   - {fileID: 1370370036}
   playerController: {fileID: 973482803}
+  dragNDrop: {fileID: 973482811}
   player: {fileID: 973482807}
   mainCamera: {fileID: 225980354}
   textColorNPC1: {r: 0.19037023, g: 0.4339623, b: 0.23165703, a: 0}
-  textColorNPC2: {r: 0, g: 0.37254903, b: 0.7372549, a: 0}
+  textColorNPC2: {r: 0.5029815, g: 0.65348, b: 0.8396226, a: 0}
   currentNPC: 0
 --- !u!1001 &1067526106
 PrefabInstance:

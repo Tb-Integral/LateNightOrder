@@ -20,10 +20,12 @@ public class DragNDrop : MonoBehaviour
     private Dragabble lastOutlineObject;
     private Outline lastOutlineButton;
     private string TagButton = "Button";
+    [HideInInspector] public bool mouseInputEnabled = true;
 
     // Update is called once per frame
     void Update()
     {
+        if (!mouseInputEnabled) return;
         PerformRaycast();
     }
 
@@ -125,7 +127,7 @@ public class DragNDrop : MonoBehaviour
         }
     }
 
-    private void Drop()
+    public void Drop()
     {
         if (rbDraggableObject != null)
         {
