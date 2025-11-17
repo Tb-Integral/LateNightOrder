@@ -15,6 +15,7 @@ public class NPCcontroller : MonoBehaviour
     //private string hexColor;
     private Color textColor;
     private int NPCindex;
+    [SerializeField] private GameObject gun;
     public bool IsSecondNPC => NPCindex == 1;
 
     // Диалоговые массивы
@@ -151,6 +152,10 @@ public class NPCcontroller : MonoBehaviour
             {
                 StartReturnJourney();
             }
+            else
+            {
+                GameManager.instance.ScreamerTime();
+            }
         }
     }
 
@@ -173,5 +178,11 @@ public class NPCcontroller : MonoBehaviour
     {
         isReturning = true;
         IsWalking = true;
+    }
+
+    public void Shot()
+    {
+        animator.SetTrigger("Shot");
+        gun.SetActive(true);
     }
 }

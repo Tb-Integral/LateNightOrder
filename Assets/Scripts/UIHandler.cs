@@ -102,6 +102,7 @@ public class UIHandler : MonoBehaviour
                 {
                     secondNPC = true;
                 }
+
                 GameManager.instance.ActivatePlayer();
             }
         }

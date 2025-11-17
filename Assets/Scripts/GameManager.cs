@@ -19,17 +19,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioSource noiseSource;
     [SerializeField] private AudioClip noiseAudio;
     [SerializeField] private AudioSource radio;
-
+    [SerializeField] private ScreamerPoint screamerPoint;
+    [SerializeField] private AudioSource heartbeat;
+    private NPCcontroller policeman;
 
     void Start()
     {
         instance = this;
         StartNPC1();
-    }
-
-    public void StartTraining()
-    {
-
     }
 
     public void StartNPC1()
@@ -41,6 +38,7 @@ public class GameManager : MonoBehaviour
     public void StartNPC2()
     {
         GameObject npc = Instantiate(NPC2, NPCspawnPoint.position, Quaternion.identity);
+        policeman = npc.GetComponent<NPCcontroller>();
         npc.transform.GetComponent<NPCcontroller>().pathPoints = paths;
     }
 
@@ -48,7 +46,7 @@ public class GameManager : MonoBehaviour
     {
         dragNDrop.Drop();
         playerController.enabled = false;
-        Vector3 npcFacePosition = NPCPosition + Vector3.up * 1.2f; //рост
+        Vector3 npcFacePosition = NPCPosition + Vector3.up * 0.9f; //смотрим выше
         StartCoroutine(RotateTowardsNPCFace(npcFacePosition));
     }
 
@@ -107,15 +105,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ScreamerTime()
+    {
+        screamerPoint.IsScreamerTime = true;
+        heartbeat.Play();
+    }
+
     public void NoiceAudio()
     {
         noiseSource.PlayOneShot(noiseAudio);
-        //noise
     }
 
     public void ActivatePlayer()
     {
+        StopAllCoroutines();
         playerController.SyncCameraRotation();
         playerController.enabled = true;
+    }
+
+    public void Shot()
+    {
+        policeman.Shot();
     }
 }
