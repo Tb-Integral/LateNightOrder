@@ -13,12 +13,14 @@ public class PlayerController : MonoBehaviour
 
     private CharacterController controller;
     private float xRotation = 0f;
+    private AudioSource footsteps;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        footsteps = transform.GetChild(0).GetComponent<AudioSource>();
     }
 
     void Update()
@@ -47,8 +49,20 @@ public class PlayerController : MonoBehaviour
             cameraForward.Normalize();
             cameraRight.Normalize();
 
+            if (!footsteps.isPlaying)
+            {
+                footsteps.Play();
+            }
+
             Vector3 move = (cameraForward * moveZ + cameraRight * moveX).normalized;
             controller.Move(move * moveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            if (footsteps.isPlaying)
+            {
+                footsteps.Stop();
+            }
         }
     }
 

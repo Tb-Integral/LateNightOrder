@@ -23,6 +23,8 @@ public class NPCcontroller : MonoBehaviour
     private string[][] afterCoffeeDialogues; // Чередующиеся диалоги после кофе
     private int currentDialogueIndex = 0;
     private bool isPlayerSpeaking = false; // Чей сейчас ход в диалоге
+
+    private AudioSource footsteps;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,6 +34,7 @@ public class NPCcontroller : MonoBehaviour
         nextPoint = pathPoints[nextPointIndex];
         currentDirectional = (nextPoint.position - transform.position).normalized;
         IsWalking = true;
+        footsteps = transform.GetChild(0).GetComponent<AudioSource>();
         if (GameManager.instance.currentNPC == 0)
         {
             NPCindex = 0;
@@ -94,6 +97,10 @@ public class NPCcontroller : MonoBehaviour
                     IsWalking = false;
                     animator.SetBool("IsWalking", false);
                     needCoffe = true;
+                    if (footsteps.isPlaying)
+                    {
+                        footsteps.Pause();
+                    }
                     ShowDialogue(initialDialogue, textColor); //показываем первый диалог
                     return;
                 }
@@ -107,7 +114,10 @@ public class NPCcontroller : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(currentDirectional);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
-
+        if (!footsteps.isPlaying)
+        {
+            footsteps.Play();
+        }
         transform.Translate(currentDirectional * speedWalk * Time.deltaTime, Space.World);
         animator.SetBool("IsWalking", true);
     }

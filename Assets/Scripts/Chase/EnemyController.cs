@@ -14,6 +14,7 @@ public class EnemyController : MonoBehaviour
     public AudioClip stabAudio;
     private BoxCollider collider;
     private AudioSource scaryAudio;
+    private AudioSource footsteps;
 
     void Start()
     {
@@ -23,6 +24,7 @@ public class EnemyController : MonoBehaviour
         stabAudioSource = GetComponent<AudioSource>();
         scaryAudio = GetComponent<AudioSource>();
         scaryAudio.Play();
+        footsteps = transform.GetChild(0).GetComponent<AudioSource>();
 
         // Настраиваем NavMeshAgent
         navMeshAgent.speed = speedWalk;
@@ -35,6 +37,10 @@ public class EnemyController : MonoBehaviour
     {
         if (CanWalk && player != null)
         {
+            if (!footsteps.isPlaying)
+            {
+                footsteps.Play();
+            }
             // Устанавливаем цель для NavMeshAgent
             navMeshAgent.SetDestination(player.position);
 
@@ -45,6 +51,10 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
+            if (footsteps.isPlaying)
+            {
+                footsteps.Pause();
+            }
             animator.SetBool("IsWalking", false);
         }
     }
