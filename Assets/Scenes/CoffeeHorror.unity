@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 2
   m_FogDensity: 0.292
@@ -6028,9 +6028,7 @@ GameObject:
   - component: {fileID: 225980354}
   - component: {fileID: 225980353}
   - component: {fileID: 225980356}
-  - component: {fileID: 225980358}
-  - component: {fileID: 225980357}
-  - component: {fileID: 225980359}
+  - component: {fileID: 225980360}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -6130,13 +6128,13 @@ MonoBehaviour:
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 0
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -6157,89 +6155,66 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &225980357
+--- !u!114 &225980360
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225980352}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d54c6bfda817a46eb9d976719fd25909, type: 3}
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RGBShiftEffect
-  on: 1
-  amount: 0.05
-  speed: 5
-  material: {fileID: 2100000, guid: 668e4ca5bbe07424e90bffec7dd41598, type: 2}
---- !u!114 &225980358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 225980352}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24866fd877eed4481a2d4cfd73bb2242, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BleachEffect
-  on: 1
-  strength: 1
-  material: {fileID: 2100000, guid: dabac87302b71472d89c8543b765eba8, type: 2}
---- !u!114 &225980359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 225980352}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 675e8398337d71042b1caf48368fc89a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VHSRetroFeature
-  vhsShader: {fileID: 4800000, guid: 97a59226afe6da84888f794f0ebe90b2, type: 3}
-  rgbShiftAmount: 0.0085
-  rgbShiftSpeed: 1.5
-  rgbShiftCurve: 1.2
-  pixelSize: 4
-  pixelScanlines: 0.6
-  grainAmount: 0.15
-  grainSize: 1.2
-  noiseIntensity: 0.08
-  scanlineIntensity: 0.45
-  scanlineSpeed: 0.87
-  scanlineCount: 480
-  scanlineSharpness: 1.2
-  vignetteIntensity: 0.6
-  vignetteSoftness: 0.8
-  vignetteRoundness: 1.5
-  glitchIntensity: 0.25
-  glitchSpeed: 3
-  glitchBlockSize: 0.015
-  contrast: 1.08
-  saturation: 1.12
-  brightness: 0.02
-  gamma: 1.05
-  tapeNoise: 0.06
-  tapeSpeed: 0.5
-  tapeWobble: 0
-  trackingNoise: 0.03
-  trackingSpeed: 1.2
-  dropoutIntensity: 0.02
-  dropoutSpeed: 4
-  timeSpeed: 1
-  enablePixel: 1
-  enableGlitch: 1
-  enableRGB: 1
-  enableGrain: 1
-  enableScan: 1
-  enableTape: 0
-  enableTracking: 1
-  enableDropout: 1
-  enableInEditMode: 1
+  m_EditorClassIdentifier: Unity.Postprocessing.Runtime::UnityEngine.Rendering.PostProcessing.PostProcessLayer
+  volumeTrigger: {fileID: 225980355}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 2
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 1
+  m_ShowCustomSorter: 1
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []
 --- !u!1001 &227184600
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12018,6 +11993,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.009569285, y: 0.0050348244, z: 0.020999994}
   m_Center: {x: -0.00005295663, y: 0.000000014901161, z: 2.3283064e-10}
+--- !u!1 &488020999
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 488021001}
+  - component: {fileID: 488021000}
+  m_Layer: 0
+  m_Name: PPVol
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &488021000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488020999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Postprocessing.Runtime::UnityEngine.Rendering.PostProcessing.PostProcessVolume
+  sharedProfile: {fileID: 11400000, guid: f9d5e34c9a7f6dc4590adda309ae94a7, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
+--- !u!4 &488021001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488020999}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -13.38911, y: 0.5859, z: -13.602}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &488326584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43233,3 +43257,4 @@ SceneRoots:
   - {fileID: 1321828165}
   - {fileID: 1327759771}
   - {fileID: 603991232}
+  - {fileID: 488021001}
