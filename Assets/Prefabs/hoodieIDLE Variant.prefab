@@ -80,6 +80,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 912199473974440423, guid: dda57ba0bfb2a4048b98ccfe6d89ec77, type: 3}
+      propertyPath: m_TagString
+      value: NPC
+      objectReference: {fileID: 0}
     - target: {fileID: 1024769686745436416, guid: dda57ba0bfb2a4048b98ccfe6d89ec77, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -0.2640838

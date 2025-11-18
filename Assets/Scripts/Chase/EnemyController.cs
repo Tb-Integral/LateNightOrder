@@ -31,6 +31,9 @@ public class EnemyController : MonoBehaviour
         navMeshAgent.angularSpeed = 360f; // Скорость поворота
         navMeshAgent.acceleration = 8f;   // Ускорение
         collider = GetComponent<BoxCollider>();
+
+        TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.GoToWarehouse);
+
     }
 
     void Update()

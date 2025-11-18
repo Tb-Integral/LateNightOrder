@@ -8,6 +8,7 @@ TagManager:
   - Button
   - Shooted
   - Enemy
+  - NPC
   layers:
   - Default
   - TransparentFX

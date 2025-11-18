@@ -76,6 +76,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guard Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 5599890904812187968, guid: b9b6196ac7b15114ea54b2e5fd9ee96b, type: 3}
+      propertyPath: m_TagString
+      value: NPC
+      objectReference: {fileID: 0}
     - target: {fileID: 6009137353700871681, guid: b9b6196ac7b15114ea54b2e5fd9ee96b, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

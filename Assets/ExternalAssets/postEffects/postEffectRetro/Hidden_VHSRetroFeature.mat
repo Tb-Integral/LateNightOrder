@@ -52,7 +52,7 @@ Material:
     - _GlitchBlockSize: 0.005
     - _GlitchIntensity: 0
     - _GlitchSpeed: 0
-    - _GrainAmount: 0
+    - _GrainAmount: 0.196
     - _GrainSize: 0.5
     - _NoiseIntensity: 0
     - _PixelScanlines: 0.568
@@ -73,7 +73,7 @@ Material:
     - _TrackingSpeed: 0
     - _Vignette: 1.15
     - _VignetteRoundness: 1.25
-    - _VignetteSoftness: 0.26
+    - _VignetteSoftness: 0.53
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

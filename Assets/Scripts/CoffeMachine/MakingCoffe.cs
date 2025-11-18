@@ -30,6 +30,7 @@ public class MakingCoffe : MonoBehaviour
         isMaking = true;
         machineSound.Play();
         coffePng = cupPoint.currentCup.GetComponent<Cup>().coffe;
+        cupPoint.currentCup.GetComponent<Cup>().HasCoffee = true;
         cupPoint.IsCoffeStartPouring = true;
 
         StartCoroutine(Wait(waitCoffePouringTime));

@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class NPCcontroller : MonoBehaviour
@@ -18,6 +19,9 @@ public class NPCcontroller : MonoBehaviour
     [SerializeField] private GameObject gun;
     public bool IsSecondNPC => NPCindex == 1;
 
+    // Learning
+    private DragNDrop dragNDrop;
+
     // Диалоговые массивы
     private string[] initialDialogue; // До получения кофе
     private string[][] afterCoffeeDialogues; // Чередующиеся диалоги после кофе
@@ -28,6 +32,7 @@ public class NPCcontroller : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        dragNDrop = GameManager.instance.dragNDrop;
         animator = GetComponent<Animator>();
 
         nextPointIndex = 1;
@@ -101,6 +106,11 @@ public class NPCcontroller : MonoBehaviour
                     {
                         footsteps.Pause();
                     }
+                    if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.None)
+                    {
+                        dragNDrop.canLearning = true;
+                        TutorialManager.Instance.StartTutorial();
+                    }
                     ShowDialogue(initialDialogue, textColor); //показываем первый диалог
                     return;
                 }
@@ -130,6 +140,7 @@ public class NPCcontroller : MonoBehaviour
 
         if (cup.IsCoffeDone)
         {
+            if(TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.GiveCoffeeToClient) TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.GiveCoffeeToClient);
             needCoffe = false;
             Destroy(other.gameObject);
             StartAfterCoffeeDialogue();
@@ -165,6 +176,7 @@ public class NPCcontroller : MonoBehaviour
             else
             {
                 GameManager.instance.ScreamerTime();
+                if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.Wait) TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.Wait);
             }
         }
     }

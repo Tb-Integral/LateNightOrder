@@ -11,9 +11,12 @@ public class CupPoint : MonoBehaviour
     public bool IsCoffePoured = false;
     public bool HasCap = false;
     public bool cupInZone = false;
+    public bool CanWork = false;
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!CanWork) return;
+
         if (!IsThereCup)
         {
             if (other.transform.GetComponent<Cup>() != null)
@@ -29,6 +32,11 @@ public class CupPoint : MonoBehaviour
                     IsThereCup = true;
                     currentCup = other.transform;
                     cupInZone = true;
+
+                    if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.PutCupInMachine)
+                    {
+                        TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.PutCupInMachine);
+                    }
                 }
             }
         }
@@ -48,6 +56,11 @@ public class CupPoint : MonoBehaviour
             currentCup.AddComponent<Rigidbody>();
             currentCup.tag = "Draggable";
             currentCup.gameObject.layer = LayerMask.NameToLayer("Draggable");
+
+            if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.PutLidOnCup)
+            {
+                TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.PutLidOnCup);
+            }
         }
     }
 

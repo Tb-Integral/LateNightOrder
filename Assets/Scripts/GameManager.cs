@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform NPCspawnPoint;
     [SerializeField] private Transform[] paths;
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private DragNDrop dragNDrop;
+    public DragNDrop dragNDrop;
     [SerializeField] private Transform player;
     [SerializeField] private Camera mainCamera;
     public Color textColorNPC1;// = "#1A5524";

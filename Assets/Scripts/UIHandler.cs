@@ -24,6 +24,9 @@ public class UIHandler : MonoBehaviour
     private Label fpsLabel;
     private float deltaTime = 0.0f;
 
+    // Learning
+    private Label learningLabel;
+
     void Awake()
     {
         Instance = this;
@@ -33,13 +36,15 @@ public class UIHandler : MonoBehaviour
         blackScreen = root.Q<VisualElement>("BlackScreen");
         dialogWindow.style.display = DisplayStyle.None;
         label.text = string.Empty;
-        centerPoint = root.Q<VisualElement>("CenterPoint");
+        centerPoint = root.Q<VisualElement>("CenterPoint"); 
         textSource = GetComponent<AudioSource>();
 
         blackScreen.style.display = DisplayStyle.None;
         blackScreen.style.opacity = 0f;
 
         fpsLabel = root.Q<Label>("FPS");
+        learningLabel = root.Q<Label>("Teaching");
+        learningLabel.style.display = DisplayStyle.None;
     }
 
     void Update()
@@ -170,5 +175,17 @@ public class UIHandler : MonoBehaviour
         {
             SceneManager.LoadScene("CoffeeHorror");
         }
+    }
+
+    public void SetLearningText(string text)
+    {
+        learningLabel.text = text;
+        learningLabel.style.display = DisplayStyle.Flex;
+    }
+
+    public void CleanLearningText()
+    {
+        learningLabel.text = "";
+        learningLabel.style.display = DisplayStyle.None;
     }
 }
