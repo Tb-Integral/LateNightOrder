@@ -84,7 +84,7 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         stabAudioSource.PlayOneShot(stabAudio);
-        StartCoroutine(GameManager.instance.TheEnd());
+        StartCoroutine(GameManager.instance.TheEnd(true));
     }
 
     public void Dead()

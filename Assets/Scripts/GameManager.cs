@@ -130,10 +130,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(TheEnd());
     }
 
-    public IEnumerator TheEnd()
+    public IEnumerator TheEnd(bool killedByEnemy = false)
     {
         yield return new WaitForSeconds(1f);
-        LockPlayer(policeman.transform.position);
+        if (!killedByEnemy) LockPlayer(policeman.transform.position);
         yield return new WaitForSeconds(2f);
         UIHandler.Instance.FadeOut();
     }

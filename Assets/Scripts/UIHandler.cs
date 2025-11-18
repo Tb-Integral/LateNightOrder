@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class UIHandler : MonoBehaviour
@@ -16,16 +17,20 @@ public class UIHandler : MonoBehaviour
     private string[] currentLines;
     private int currentLineIndex = 0;
     private Color currentTextColor;
-    private NPCcontroller currentNPC; // Для отслеживания чередующихся диалогов
+    private NPCcontroller currentNPC;
     private bool secondNPC;
+
+    // FPS
+    private Label fpsLabel;
+    private float deltaTime = 0.0f;
 
     void Awake()
     {
         Instance = this;
         var root = GetComponent<UIDocument>().rootVisualElement;
         dialogWindow = root.Q<VisualElement>("Background");
-        label = root.Q<Label>();
-        blackScreen = root.Q<VisualElement>("BlackScreen"); ;
+        label = root.Q<Label>("DialogText");
+        blackScreen = root.Q<VisualElement>("BlackScreen");
         dialogWindow.style.display = DisplayStyle.None;
         label.text = string.Empty;
         centerPoint = root.Q<VisualElement>("CenterPoint");
@@ -33,6 +38,22 @@ public class UIHandler : MonoBehaviour
 
         blackScreen.style.display = DisplayStyle.None;
         blackScreen.style.opacity = 0f;
+
+        fpsLabel = root.Q<Label>("FPS");
+    }
+
+    void Update()
+    {
+        // Обновление FPS
+        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+        float fps = 1.0f / deltaTime;
+        if (fpsLabel != null)
+            fpsLabel.text = $"FPS: {Mathf.Ceil(fps)}";
+
+        if (Input.GetKeyDown(KeyCode.Space) && IsDialogActive)
+        {
+            SkipText();
+        }
     }
 
     public void SetDialog(Vector3 NPCPosition, string[] lines, Color textColor, NPCcontroller npc = null)
@@ -41,7 +62,7 @@ public class UIHandler : MonoBehaviour
         currentLines = lines;
         currentTextColor = textColor;
         currentTextColor.a = 1f;
-        currentNPC = npc; // Сохраняем ссылку на NPC для чередующихся диалогов
+        currentNPC = npc;
 
         label.style.color = new StyleColor(currentTextColor);
         currentLineIndex = 0;
@@ -71,14 +92,6 @@ public class UIHandler : MonoBehaviour
         {
             StopAllCoroutines();
             label.text = currentLines[currentLineIndex];
-        }
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && IsDialogActive)
-        {
-            SkipText();
         }
     }
 
@@ -137,26 +150,25 @@ public class UIHandler : MonoBehaviour
     IEnumerator FadeScreen(float startAlpha, float targetAlpha, float duration)
     {
         blackScreen.style.display = DisplayStyle.Flex;
-
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
-
             blackScreen.style.opacity = currentAlpha;
-
             yield return null;
         }
 
-        // Гарантируем, что достигли целевого значения
         blackScreen.style.opacity = targetAlpha;
 
-        // Скрываем элемент если он полностью прозрачный
         if (targetAlpha == 0f)
         {
             blackScreen.style.display = DisplayStyle.None;
+        }
+        else
+        {
+            SceneManager.LoadScene("CoffeeHorror");
         }
     }
 }
