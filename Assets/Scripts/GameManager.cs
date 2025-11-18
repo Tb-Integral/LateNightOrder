@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         StartNPC1();
+        UIHandler.Instance.FadeIn();
     }
 
     public void StartNPC1()
@@ -126,5 +127,14 @@ public class GameManager : MonoBehaviour
     public void Shot()
     {
         policeman.Shot();
+        StartCoroutine(TheEnd());
+    }
+
+    public IEnumerator TheEnd()
+    {
+        yield return new WaitForSeconds(1f);
+        LockPlayer(policeman.transform.position);
+        yield return new WaitForSeconds(2f);
+        UIHandler.Instance.FadeOut();
     }
 }

@@ -1,0 +1,3 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="BlackScreen" picking-mode="Ignore" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/UI/Square.png?fileID=7482667652216324306&amp;guid=fba1a3878a34f904093375a075025aad&amp;type=3#Square&quot;); -unity-background-image-tint-color: rgb(0, 0, 0); width: 100%; height: 100%; color: rgb(255, 255, 255); position: absolute; top: 0%; left: 0%; -unity-text-outline-color: rgb(0, 0, 0); right: 0%; bottom: 0%; background-color: rgba(0, 0, 0, 0); opacity: 0;" />
+</ui:UXML>

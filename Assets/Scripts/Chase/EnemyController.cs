@@ -13,6 +13,7 @@ public class EnemyController : MonoBehaviour
     public AudioSource stabAudioSource;
     public AudioClip stabAudio;
     private BoxCollider collider;
+    private AudioSource scaryAudio;
 
     void Start()
     {
@@ -20,6 +21,8 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         stabAudioSource = GetComponent<AudioSource>();
+        scaryAudio = GetComponent<AudioSource>();
+        scaryAudio.Play();
 
         // Настраиваем NavMeshAgent
         navMeshAgent.speed = speedWalk;
@@ -81,13 +84,16 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         stabAudioSource.PlayOneShot(stabAudio);
+        StartCoroutine(GameManager.instance.TheEnd());
     }
 
     public void Dead()
     {
         StopEnemy();
+        scaryAudio.Stop();
         animator.SetTrigger("Shooted");
         collider.enabled = false;
+        GameManager.instance.LockPlayer(transform.position);
         GameManager.instance.Shot();
     }
 

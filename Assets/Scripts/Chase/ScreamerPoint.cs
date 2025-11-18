@@ -9,7 +9,6 @@ public class ScreamerPoint : MonoBehaviour
     private GameObject enemy;
     private Animator enemyAnimator;
     [SerializeField] private Vector3 endPosition = new Vector3(-13.86f, -0.79f, -13.92f);
-    [SerializeField] private AudioSource scaryAudio;
     [SerializeField] private Transform player;
     [SerializeField] private GameObject shootPoint;
 
@@ -30,7 +29,6 @@ public class ScreamerPoint : MonoBehaviour
         enemy.GetComponent<EnemyController>().player = player;
         enemyAnimator = enemy.GetComponent<Animator>();
         enemyAnimator.SetTrigger("Peeking");
-        scaryAudio.Play();
         StartCoroutine(MoveEnemy());
         GameManager.instance.LockPlayer(enemy.transform.position);
         shootPoint.SetActive(true);
