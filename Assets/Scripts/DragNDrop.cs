@@ -1,193 +1,231 @@
-using System;
 using UnityEngine;
 
 public class DragNDrop : MonoBehaviour
 {
-    [SerializeField] private float speedForDraggableObject = 5f;
-    private KeyCode key0 = KeyCode.Mouse0;
-    private string Tag = "Draggable";
-    [SerializeField] private float rayLength = 3f;
-    [SerializeField] private Transform playerCamera;
-    private Transform draggableObject;
-    private Rigidbody rbDraggableObject;
-    [SerializeField] private Transform dragPoint;
-    [SerializeField] private LayerMask defaultLayerMask;
+    [Header("Settings")]
+    [SerializeField] private float dragSpeed = 5f;
     [SerializeField] private float rotationSpeed = 3f;
-    [SerializeField] private CupPoint cupPoint;
-    private bool IsDragging;
-    private KeyCode key1 = KeyCode.Mouse1;
+    [SerializeField] private float rayLength = 3f;
     [SerializeField] private float dropForce = 5f;
+
+    [Header("Refs")]
+    [SerializeField] private Transform playerCamera;
+    [SerializeField] private Transform dragPoint;
+    [SerializeField] private LayerMask rayMask;
+    [SerializeField] private CupPoint cupPoint;
+
+    // States
+    private bool isDragging;
+    public bool mouseInputEnabled = true;
+    public bool canLearning;
+
+    // Cached draggable
+    private Transform dragObject;
+    private Rigidbody dragRb;
+    private Dragabble dragScript;
+
+    // Outlines
     private Dragabble lastOutlineObject;
     private Outline lastOutlineButton;
-    private string TagButton = "Button";
-    [HideInInspector] public bool mouseInputEnabled = true;
-    [HideInInspector] public bool canLearning;
 
-    // Update is called once per frame
+    private const string TagDraggable = "Draggable";
+    private const string TagButton = "Button";
+
     void Update()
     {
         if (!mouseInputEnabled) return;
-        PerformRaycast();
-    }
+        ProcessRaycast();
 
-    private void PerformRaycast()
-    {
-
-        RaycastHit hit;
-        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, rayLength, defaultLayerMask))
-        {
-            if (hit.transform.CompareTag(Tag))
-            {
-
-                if (lastOutlineObject != null)
-                {
-                    lastOutlineObject.SwitchOutlineOff();
-                }
-
-                if (!IsDragging)
-                {
-                    lastOutlineObject = hit.transform.GetComponent<Dragabble>();
-                    lastOutlineObject.SwitchOutlineOn();
-                }
-
-                if (Input.GetKeyDown(key0))
-                {
-                    CheckTutorialStepOnPickup(hit.transform);
-                    PrepareObgect(hit);
-                    IsDragging = true;
-                }
-            }
-            else if (hit.transform.CompareTag(TagButton))
-            {
-                if (cupPoint != null && cupPoint.IsThereCup && !cupPoint.IsCoffeStartPouring)
-                {
-                    lastOutlineButton = hit.transform.GetComponent<Outline>();
-                    lastOutlineButton.enabled = true;
-
-                    if (Input.GetKeyDown(key0))
-                    {
-                        hit.transform.GetComponent<MakingCoffe>().StartMakingCoffe();
-
-                        // Сообщаем о нажатии кнопки, если это текущий шаг обучения
-                        if (canLearning && TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.PressButton)
-                        {
-                            TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.PressButton);
-                        }
-                    }
-                }
-            }
-
-        }
-        else if (lastOutlineObject != null || lastOutlineButton != null)
-        {
-            if (lastOutlineObject != null)
-            {
-                lastOutlineObject.SwitchOutlineOff();
-                lastOutlineObject = null;
-            }
-            if (lastOutlineButton != null)
-            {
-                lastOutlineButton.enabled = false;
-                lastOutlineButton = null;
-            }
-        }
-
-        if (Input.GetKeyUp(key0) && draggableObject != null)
-        {
-            IsDragging = false;
-            Drop();
-        }
-
-        if (Input.GetKeyDown(key1) && draggableObject != null)
-        {
-            IsDragging = false;
-            DropWithForce();
-        }
-    }
-
-    private void DropWithForce()
-    {
-        if (rbDraggableObject != null)
-        {
-            draggableObject.GetComponent<Dragabble>().DropWithForcePrepare(playerCamera.forward, dropForce);
-            draggableObject = null;
-            rbDraggableObject = null;
-        }
+        if (isDragging && Input.GetMouseButtonUp(0)) Drop();
+        if (isDragging && Input.GetMouseButtonDown(1)) DropWithForce();
     }
 
     private void FixedUpdate()
     {
-        if (IsDragging && draggableObject != null)
+        if (isDragging && dragRb)
         {
-            Drag();
+            Vector3 dir = dragPoint.position - dragObject.position;
+            dragRb.linearVelocity = dir * dragSpeed;
+
+            // Rotation
+            Quaternion rot = Quaternion.Euler(-90, 0, 0);
+            dragRb.rotation = Quaternion.Slerp(dragRb.rotation, rot, rotationSpeed * Time.fixedDeltaTime);
         }
     }
 
-    private void Drag()
+    // --------------------------
+    //   RAYCAST LOGIC
+    // --------------------------
+    private void ProcessRaycast()
     {
-        if (rbDraggableObject != null)
-        {
-            //перемещение
-            Vector3 direction = dragPoint.position - draggableObject.transform.position;
-            rbDraggableObject.linearVelocity = direction * speedForDraggableObject;
+        RaycastHit hit;
 
-            //вращение
-            Quaternion targetRotation = Quaternion.Euler(-90f, 0f, 0f);
-            rbDraggableObject.rotation = Quaternion.Slerp(rbDraggableObject.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+        if (Physics.Raycast(playerCamera.position, playerCamera.forward, out hit, rayLength, rayMask))
+        {
+            // DRAGGABLE
+            if (hit.transform.CompareTag(TagDraggable))
+            {
+                HandleOutlineOnObject(hit);
+
+                if (Input.GetMouseButtonDown(0) && !isDragging)
+                {
+                    CheckTutorialOnPickup(hit.transform);
+                    StartDragging(hit.transform);
+                }
+
+                return;
+            }
+
+            // BUTTON
+            if (hit.transform.CompareTag(TagButton))
+            {
+                HandleOutlineOnButton(hit);
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    hit.transform.GetComponent<MakingCoffe>().StartMakingCoffe();
+                    TryCompleteTutorialButton();
+                }
+
+                return;
+            }
         }
+
+        // Если ни во что не попали — выключаем подсветки
+        ClearOutlines();
+    }
+
+    // --------------------------
+    //   OUTLINES
+    // --------------------------
+    private void HandleOutlineOnObject(RaycastHit hit)
+    {
+        // reset button outline
+        if (lastOutlineButton)
+        {
+            lastOutlineButton.enabled = false;
+            lastOutlineButton = null;
+        }
+
+        if (lastOutlineObject && lastOutlineObject.transform != hit.transform)
+            lastOutlineObject.SwitchOutlineOff();
+
+        if (!isDragging)
+        {
+            lastOutlineObject = hit.transform.GetComponent<Dragabble>();
+            lastOutlineObject.SwitchOutlineOn();
+        }
+    }
+
+    private void HandleOutlineOnButton(RaycastHit hit)
+    {
+        if (cupPoint != null && cupPoint.IsThereCup && !cupPoint.IsCoffeStartPouring)
+        {
+            if (lastOutlineObject)
+            {
+                lastOutlineObject.SwitchOutlineOff();
+                lastOutlineObject = null;
+            }
+
+            lastOutlineButton = hit.transform.GetComponent<Outline>();
+            lastOutlineButton.enabled = true;
+        }
+    }
+
+    private void ClearOutlines()
+    {
+        if (lastOutlineObject)
+        {
+            lastOutlineObject.SwitchOutlineOff();
+            lastOutlineObject = null;
+        }
+
+        if (lastOutlineButton)
+        {
+            lastOutlineButton.enabled = false;
+            lastOutlineButton = null;
+        }
+    }
+
+    // --------------------------
+    //   DRAGGING
+    // --------------------------
+    private void StartDragging(Transform obj)
+    {
+        dragObject = obj;
+        dragScript = obj.GetComponent<Dragabble>();
+        dragRb = obj.GetComponent<Rigidbody>();
+
+        dragScript.PrepareObject();
+
+        isDragging = true;
     }
 
     public void Drop()
     {
-        if (rbDraggableObject != null)
+        if (dragScript != null)
         {
-            draggableObject.GetComponent<Dragabble>().DropPrepare();
-            draggableObject = null;
-            rbDraggableObject = null;
+            dragScript.DropPrepare();
+        }
+        ClearDragState();
+    }
+
+    private void DropWithForce()
+    {
+        if (dragScript != null)
+        {
+            dragScript.DropWithForcePrepare(playerCamera.forward, dropForce);
+        }
+        ClearDragState();
+    }
+
+    private void ClearDragState()
+    {
+        dragObject = null;
+        dragRb = null;
+        dragScript = null;
+        isDragging = false;
+    }
+
+    // --------------------------
+    //   TUTORIAL
+    // --------------------------
+    private void TryCompleteTutorialButton()
+    {
+        if (canLearning &&
+            TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.PressButton)
+        {
+            TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.PressButton);
         }
     }
 
-    private void PrepareObgect(RaycastHit hit)
+    private void CheckTutorialOnPickup(Transform obj)
     {
-        draggableObject = hit.transform;
-        draggableObject.GetComponent<Dragabble>().PrepareObject();
-        rbDraggableObject = hit.transform.GetComponent<Rigidbody>();
-    }
-
-    private void CheckTutorialStepOnPickup(Transform pickedObject)
-    {
-        Debug.Log("can learning: "+canLearning);
         if (!canLearning) return;
 
-        var currentStep = TutorialManager.Instance.CurrentStep;
-        Cup cup = pickedObject.GetComponent<Cup>();
+        var step = TutorialManager.Instance.CurrentStep;
 
-        // Если взяли стаканчик
+        // Cup
+        Cup cup = obj.GetComponent<Cup>();
         if (cup != null)
         {
-            // Проверяем, есть ли в стаканчике кофе
             if (cup.HasCoffee)
             {
-                // Если в стаканчике есть кофе - проверяем задание на подбор готового кофе
-                if (currentStep == TutorialManager.TutorialStep.TakeCoffee && cup.IsCoffeDone)
-                {
-                    TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.TakeCoffee);
-                }
+                if (step == TutorialManager.TutorialStep.TakeCoffee && cup.IsCoffeDone)
+                    TutorialManager.Instance.CompleteStep(step);
             }
             else
             {
-                Debug.Log("TakeCup? "+ (currentStep == TutorialManager.TutorialStep.TakeCup));
-                // Если стаканчик пустой - проверяем задание на подбор стаканчика
-                if (currentStep == TutorialManager.TutorialStep.TakeCup)
-                {
-                    TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.TakeCup);
-                }
+                if (step == TutorialManager.TutorialStep.TakeCup)
+                    TutorialManager.Instance.CompleteStep(step);
             }
+            return;
         }
-        // Проверяем, взяли ли крышку (отдельный объект)
-        else if (currentStep == TutorialManager.TutorialStep.TakeLid && pickedObject.GetComponent<Cap>() != null)
+
+        // Lid
+        if (obj.GetComponent<Cap>() && step == TutorialManager.TutorialStep.TakeLid)
         {
-            TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.TakeLid);
+            TutorialManager.Instance.CompleteStep(step);
         }
     }
 }

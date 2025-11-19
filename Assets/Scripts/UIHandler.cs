@@ -22,10 +22,14 @@ public class UIHandler : MonoBehaviour
 
     // FPS
     private Label fpsLabel;
-    private float deltaTime = 0.0f;
+    private float fpsUpdateTimer = 0f;
+    private const float FPS_UPDATE_INTERVAL = 0.5f;
+    private int frameCount = 0;
+    private float timeAccumulator = 0f;
 
     // Learning
     private Label learningLabel;
+
 
     void Awake()
     {
@@ -50,15 +54,27 @@ public class UIHandler : MonoBehaviour
     void Update()
     {
         // Обновление FPS
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float fps = 1.0f / deltaTime;
-        if (fpsLabel != null)
-            fpsLabel.text = $"FPS: {Mathf.Ceil(fps)}";
+        frameCount++;
+        timeAccumulator += Time.unscaledDeltaTime;
+
+        if (timeAccumulator >= FPS_UPDATE_INTERVAL)
+        {
+            UpdateFPS();
+            timeAccumulator = 0f;
+            frameCount = 0;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && IsDialogActive)
         {
             SkipText();
         }
+    }
+
+    private void UpdateFPS()
+    {
+        float fps = frameCount / FPS_UPDATE_INTERVAL;
+        if (fpsLabel != null)
+            fpsLabel.text = $"FPS: {Mathf.RoundToInt(fps)}";
     }
 
     public void SetDialog(Vector3 NPCPosition, string[] lines, Color textColor, NPCcontroller npc = null)

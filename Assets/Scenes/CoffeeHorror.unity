@@ -20056,16 +20056,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69446dc5b50f15748bed1157241ed7e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable
-  speedForDraggableObject: 5
+  dragSpeed: 5
+  rotationSpeed: 3
   rayLength: 2
+  dropForce: 5
   playerCamera: {fileID: 225980355}
   dragPoint: {fileID: 686087359}
-  defaultLayerMask:
+  rayMask:
     serializedVersion: 2
     m_Bits: 128
-  rotationSpeed: 3
   cupPoint: {fileID: 50865519}
-  dropForce: 5
   mouseInputEnabled: 1
   canLearning: 0
 --- !u!1001 &974604685

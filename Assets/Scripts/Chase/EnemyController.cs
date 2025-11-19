@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,96 +6,119 @@ public class EnemyController : MonoBehaviour
 {
     public float speedWalk;
     private Animator animator;
-    private bool CanWalk;
-    private NavMeshAgent navMeshAgent;
-    [HideInInspector] public Transform player;
-    public AudioSource stabAudioSource;
-    public AudioClip stabAudio;
-    private BoxCollider collider;
+    private NavMeshAgent agent;
+
     private AudioSource scaryAudio;
     private AudioSource footsteps;
 
+    private bool canWalk;
+    private bool isWalkingAnim = false;
+
+    private Vector3 lastPlayerPos;
+    private float updateTimer;
+
+    private readonly WaitForSeconds stabDelay = new WaitForSeconds(1f);
+    private readonly WaitForSeconds startDelay = new WaitForSeconds(2.1f);
+
+    [HideInInspector] public Transform player;
+    public AudioClip stabAudio;
+
+    private BoxCollider col;
+
+    private const float UPDATE_INTERVAL = 0.3f;
+
     void Start()
     {
-        StartCoroutine(Wait());
+        StartCoroutine(StartWalking());
+
         animator = GetComponent<Animator>();
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        stabAudioSource = GetComponent<AudioSource>();
+        agent = GetComponent<NavMeshAgent>();
+        col = GetComponent<BoxCollider>();
+
+        // Берём все AudioSource разом
         scaryAudio = GetComponent<AudioSource>();
-        scaryAudio.Play();
         footsteps = transform.GetChild(0).GetComponent<AudioSource>();
 
-        // Настраиваем NavMeshAgent
-        navMeshAgent.speed = speedWalk;
-        navMeshAgent.angularSpeed = 360f; // Скорость поворота
-        navMeshAgent.acceleration = 8f;   // Ускорение
-        collider = GetComponent<BoxCollider>();
+        scaryAudio.Play();
+
+        agent.speed = speedWalk;
+        agent.angularSpeed = 360f;
+        agent.acceleration = 8f;
 
         TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.GoToWarehouse);
-
     }
 
     void Update()
     {
-        if (CanWalk && player != null)
+        if (!canWalk || player == null)
         {
-            if (!footsteps.isPlaying)
-            {
-                footsteps.Play();
-            }
-            // Устанавливаем цель для NavMeshAgent
-            navMeshAgent.SetDestination(player.position);
-
-            // Включаем анимацию ходьбы
-            animator.SetBool("IsWalking", navMeshAgent.velocity.magnitude > 0.1f);
-
-            // Автоматический поворот уже обрабатывается NavMeshAgent
+            if (footsteps.isPlaying) footsteps.Pause();
+            SetWalkAnim(false);
+            return;
         }
-        else
+
+        if (!footsteps.isPlaying)
+            footsteps.Play();
+
+        updateTimer -= Time.deltaTime;
+
+        if (updateTimer <= 0f)
         {
-            if (footsteps.isPlaying)
+            // если игрок не сдвинулся — не обновляем путь
+            if ((player.position - lastPlayerPos).sqrMagnitude > 0.2f)
             {
-                footsteps.Pause();
+                agent.SetDestination(player.position);
+                lastPlayerPos = player.position;
             }
-            animator.SetBool("IsWalking", false);
+
+            updateTimer = UPDATE_INTERVAL;
+        }
+
+        bool isMoving = agent.velocity.sqrMagnitude > 0.1f;
+        SetWalkAnim(isMoving);
+    }
+
+    private void SetWalkAnim(bool state)
+    {
+        if (state != isWalkingAnim)
+        {
+            isWalkingAnim = state;
+            animator.SetBool("IsWalking", state);
         }
     }
-    IEnumerator Wait()
+
+    IEnumerator StartWalking()
     {
-        yield return new WaitForSeconds(2.1f);
-        CanWalk = true;
+        yield return startDelay;
+        canWalk = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!CanWalk) return;
-        if (other.transform.CompareTag("Player"))
+        if (!canWalk) return;
+
+        if (other.CompareTag("Player"))
         {
             StopEnemy();
-            StartCoroutine(StabSound());
+            StartCoroutine(StabRoutine());
             animator.SetTrigger("Stabbing");
-            animator.SetBool("IsWalking", false);
+
             GameManager.instance.LockPlayer(transform.position);
         }
     }
 
     private void StopEnemy()
     {
-        CanWalk = false;
-
-        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
-        {
-            navMeshAgent.isStopped = true;
-            navMeshAgent.ResetPath();
-        }
-
-        animator.SetBool("IsWalking", false);
+        canWalk = false;
+        agent.isStopped = true;
+        agent.ResetPath();
+        SetWalkAnim(false);
     }
 
-    IEnumerator StabSound()
+    IEnumerator StabRoutine()
     {
-        yield return new WaitForSeconds(1f);
-        stabAudioSource.PlayOneShot(stabAudio);
+        yield return stabDelay;
+        scaryAudio.PlayOneShot(stabAudio);
         StartCoroutine(GameManager.instance.TheEnd(true));
     }
 
@@ -104,10 +126,11 @@ public class EnemyController : MonoBehaviour
     {
         StopEnemy();
         scaryAudio.Stop();
+
         animator.SetTrigger("Shooted");
-        collider.enabled = false;
+        col.enabled = false;
+
         GameManager.instance.LockPlayer(transform.position);
         GameManager.instance.Shot();
     }
-
 }

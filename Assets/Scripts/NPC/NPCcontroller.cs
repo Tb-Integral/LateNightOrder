@@ -1,205 +1,240 @@
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 public class NPCcontroller : MonoBehaviour
 {
+    [Header("Path")]
     public Transform[] pathPoints;
-    private Transform nextPoint;
-    private int nextPointIndex;
-    public float speedWalk;
-    private Animator animator;
-    private bool IsWalking;
-    private Vector3 currentDirectional;
-    private bool needCoffe;
-    private bool isReturning;
-    //private string hexColor;
-    private Color textColor;
-    private int NPCindex;
+    public float speedWalk = 2f;
+
+    [Header("NPC")]
     [SerializeField] private GameObject gun;
     public bool IsSecondNPC => NPCindex == 1;
 
-    // Learning
+    private int NPCindex;
+    private int nextPointIndex = 1;
+    private bool isReturning;
+    private bool needCoffee;
+    private bool isWalking = true;
+
+    private Transform nextPoint;
+    private Vector3 direction;
+
+    // Systems
+    private Animator animator;
+    private AudioSource footsteps;
     private DragNDrop dragNDrop;
 
-    // Диалоговые массивы
-    private string[] initialDialogue; // До получения кофе
-    private string[][] afterCoffeeDialogues; // Чередующиеся диалоги после кофе
-    private int currentDialogueIndex = 0;
-    private bool isPlayerSpeaking = false; // Чей сейчас ход в диалоге
+    // Dialogue
+    private string[] initialDialogue;
+    private string[][] afterCoffeeDialogues;
+    private int dialogueIndex = 0;
 
-    private AudioSource footsteps;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private Color textColor;
+
+
+    private void Start()
     {
         dragNDrop = GameManager.instance.dragNDrop;
         animator = GetComponent<Animator>();
-
-        nextPointIndex = 1;
-        nextPoint = pathPoints[nextPointIndex];
-        currentDirectional = (nextPoint.position - transform.position).normalized;
-        IsWalking = true;
         footsteps = transform.GetChild(0).GetComponent<AudioSource>();
-        if (GameManager.instance.currentNPC == 0)
+
+        nextPoint = pathPoints[nextPointIndex];
+
+        // ------------------------------------
+        // NPC CONFIG
+        // ------------------------------------
+        NPCindex = GameManager.instance.currentNPC;
+        bool isFirstNPC = NPCindex == 0;
+
+        textColor = isFirstNPC ?
+            GameManager.instance.textColorNPC1 :
+            GameManager.instance.textColorNPC2;
+
+        if (isFirstNPC)
         {
-            NPCindex = 0;
-            textColor = GameManager.instance.textColorNPC1;
-
-            initialDialogue = new string[] { "Кофе. Черный." };
-
-            afterCoffeeDialogues = new string[][] {
-            new string[] { "У вас тут тихо. Одни работаете?" },                    // NPC
-            new string[] { "Да, в эту смену один." },                             // Игрок
-            new string[] { "...", "Как удобно.", "Благодарю." }                   // NPC
+            initialDialogue = new[] { "Кофе. Черный." };
+            afterCoffeeDialogues = new[]
+            {
+                new[] { "У вас тут тихо. Одни работаете?" },
+                new[] { "Да, в эту смену один." },
+                new[] { "...", "Как удобно.", "Благодарю." }
             };
         }
         else
         {
-            NPCindex = 1;
-            textColor = GameManager.instance.textColorNPC2;
-
-            initialDialogue = new string[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." };
-
-            afterCoffeeDialogues = new string[][] {
-            new string[] { "Машину на обочине бросил. То ли стук, то ли скрежет...", "Слушай, а ты в машинах шаришь?" }, // NPC
-            new string[] { "Нет, извините, не моё." },                                                                 // Игрок
-            new string[] { "Ясно...", "А может, тот парень, второй, разбирается? Тот, что с тобой в смене?" },         // NPC
-            new string[] { "Какой второй? Я здесь один." },                                                           // Игрок
-            new string[] { "Ну, мужик в куртке.", "Я его видел, когда подъезжал.", "Он с задней стороны здания заходил, в ту вашу дверь, что возле мусорных баков. Я подумал, ваш сотрудник." }, // NPC
-            new string[] { "...", "Секунду." }                                                                        // Игрок
+            initialDialogue = new[] { "Эспрессо, пожалуйста. Двойной. Не ночь, а кошмар какой-то." };
+            afterCoffeeDialogues = new[]
+            {
+                new[] { "Машину на обочине бросил...", "Слушай, а ты в машинах шаришь?" },
+                new[] { "Нет, извините, не моё." },
+                new[] { "Ясно...", "А может, тот парень, второй, разбирается?" },
+                new[] { "Какой второй? Я здесь один." },
+                new[] { "Ну, мужик в куртке...", "Зашёл с той двери возле баков." },
+                new[] { "...", "Секунду." }
             };
         }
     }
 
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
-        if (!IsWalking) return;
+        if (!isWalking)
+        {
+            animator.SetBool("IsWalking", false);
+            return;
+        }
 
-        if (Vector3.Distance(transform.position, nextPoint.position) < 0.1f)
-        {
-            if (isReturning)
-            {
-                nextPointIndex--;
-                if (nextPointIndex < 0)
-                {
-                    IsWalking = false;
-                    if (NPCindex == 0)
-                    {
-                        GameManager.instance.currentNPC++;
-                        GameManager.instance.StartNPC2();
-                    }
-                    Destroy(gameObject);
-                    return;
-                }
-            }
-            else
-            {
-                nextPointIndex++;
-                if (nextPointIndex == pathPoints.Length)
-                {
-                    nextPointIndex--;
-                    IsWalking = false;
-                    animator.SetBool("IsWalking", false);
-                    needCoffe = true;
-                    if (footsteps.isPlaying)
-                    {
-                        footsteps.Pause();
-                    }
-                    if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.None)
-                    {
-                        dragNDrop.canLearning = true;
-                        TutorialManager.Instance.StartTutorial();
-                    }
-                    ShowDialogue(initialDialogue, textColor); //показываем первый диалог
-                    return;
-                }
-            }
-            nextPoint = pathPoints[nextPointIndex];
-        }
-        currentDirectional = (nextPoint.position - transform.position).normalized;
+        // Движение
+        MoveTowardsPoint();
 
-        if (currentDirectional != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(currentDirectional);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
-        }
-        if (!footsteps.isPlaying)
-        {
-            footsteps.Play();
-        }
-        transform.Translate(currentDirectional * speedWalk * Time.deltaTime, Space.World);
+        // Анимация
         animator.SetBool("IsWalking", true);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!needCoffe) return;
-        Cup cup = other.GetComponent<Cup>();
-        if (cup == null) return;
 
-        if (cup.IsCoffeDone)
+    // ---------------------------------------------------------
+    //  ДВИЖЕНИЕ
+    // ---------------------------------------------------------
+    private void MoveTowardsPoint()
+    {
+        float distance = Vector3.Distance(transform.position, nextPoint.position);
+
+        if (distance < 0.1f)
         {
-            if(TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.GiveCoffeeToClient) TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.GiveCoffeeToClient);
-            needCoffe = false;
-            Destroy(other.gameObject);
-            StartAfterCoffeeDialogue();
+            HandlePointReached();
+            return;
         }
+
+        direction = (nextPoint.position - transform.position).normalized;
+
+        // Поворот
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(direction),
+            5f * Time.deltaTime
+        );
+
+        // Шаги
+        if (!footsteps.isPlaying) footsteps.Play();
+
+        // Перемещение
+        transform.Translate(direction * speedWalk * Time.deltaTime, Space.World);
     }
 
-    private void StartAfterCoffeeDialogue()
+
+    private void HandlePointReached()
     {
-        currentDialogueIndex = 0;
+        nextPointIndex += isReturning ? -1 : +1;
+
+        // NPC УХОДИТ
+        if (isReturning && nextPointIndex < 0)
+        {
+            GameManager.instance.currentNPC++;
+            GameManager.instance.StartNPC2();
+            Destroy(gameObject);
+            return;
+        }
+
+        // NPC ДОШЁЛ ДО ТОЧКИ КОФЕ
+        if (!isReturning && nextPointIndex >= pathPoints.Length)
+        {
+            nextPointIndex = pathPoints.Length - 1;
+            isWalking = false;
+
+            animator.SetBool("IsWalking", false);
+            footsteps.Pause();
+
+            needCoffee = true;
+
+            if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.None)
+            {
+                dragNDrop.canLearning = true;
+                TutorialManager.Instance.StartTutorial();
+            }
+
+            ShowDialogue(initialDialogue, textColor);
+            return;
+        }
+
+        nextPoint = pathPoints[nextPointIndex];
+    }
+
+
+    // ---------------------------------------------------------
+    //  ДИАЛОГИ
+    // ---------------------------------------------------------
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!needCoffee) return;
+        if (!other.TryGetComponent(out Cup cup)) return;
+        if (!cup.IsCoffeDone) return;
+
+        needCoffee = false;
+        Destroy(other.gameObject);
+
+        if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.GiveCoffeeToClient)
+            TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.GiveCoffeeToClient);
+
+        dialogueIndex = 0;
         ShowNextAfterCoffeeDialogue();
     }
 
+
     private void ShowNextAfterCoffeeDialogue()
     {
-        if (currentDialogueIndex < afterCoffeeDialogues.Length)
+        if (dialogueIndex < afterCoffeeDialogues.Length)
         {
-            // Определяем, кто говорит и какой цвет использовать
-            isPlayerSpeaking = (currentDialogueIndex % 2 == 1); // Нечетные индексы - игрок
-            Color dialogueColor = isPlayerSpeaking ? Color.white : textColor;
+            bool isPlayerSpeaking = (dialogueIndex % 2 == 1);
+            Color color = isPlayerSpeaking ? Color.white : textColor;
 
-            string[] currentDialogue = afterCoffeeDialogues[currentDialogueIndex];
-            ShowDialogue(currentDialogue, dialogueColor, true);
+            ShowDialogue(afterCoffeeDialogues[dialogueIndex], color, true);
         }
         else
         {
-            // Все диалоги завершены, начинаем возвращение
-            GameManager.instance.ActivatePlayer();
-
-            if (NPCindex == 0)
-            {
-                StartReturnJourney();
-            }
-            else
-            {
-                GameManager.instance.ScreamerTime();
-                if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.Wait) TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.Wait);
-            }
+            EndAfterCoffeeDialogue();
         }
     }
+
+
+    private void EndAfterCoffeeDialogue()
+    {
+        GameManager.instance.ActivatePlayer();
+
+        if (NPCindex == 0)
+        {
+            StartReturnJourney();
+        }
+        else
+        {
+            if (TutorialManager.Instance.CurrentStep == TutorialManager.TutorialStep.Wait)
+                TutorialManager.Instance.CompleteStep(TutorialManager.TutorialStep.Wait);
+
+            GameManager.instance.ScreamerTime();
+        }
+    }
+
 
     private void ShowDialogue(string[] lines, Color color, bool isAfterCoffee = false)
     {
         UIHandler.Instance.SetDialog(transform.position, lines, color, isAfterCoffee ? this : null);
     }
 
-    // Вызывается из UIHandler когда заканчивается текущий диалог
+
     public void OnDialogueComplete()
     {
-        if (currentDialogueIndex < afterCoffeeDialogues.Length)
-        {
-            currentDialogueIndex++;
-            ShowNextAfterCoffeeDialogue();
-        }
+        dialogueIndex++;
+        ShowNextAfterCoffeeDialogue();
     }
 
+
+    // ---------------------------------------------------------
+    //  ДРУГОЕ
+    // ---------------------------------------------------------
     private void StartReturnJourney()
     {
         isReturning = true;
-        IsWalking = true;
+        isWalking = true;
     }
 
     public void Shot()
