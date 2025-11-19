@@ -43,8 +43,8 @@ public class UIHandler : MonoBehaviour
         centerPoint = root.Q<VisualElement>("CenterPoint"); 
         textSource = GetComponent<AudioSource>();
 
-        blackScreen.style.display = DisplayStyle.None;
-        blackScreen.style.opacity = 0f;
+        //blackScreen.style.display = DisplayStyle.None;
+        blackScreen.style.opacity = 1f;
 
         fpsLabel = root.Q<Label>("FPS");
         learningLabel = root.Q<Label>("Teaching");
@@ -159,13 +159,19 @@ public class UIHandler : MonoBehaviour
 
     public void FadeIn()
     {
-        StartCoroutine(FadeScreen(1f, 0f, 1f));
+        StartCoroutine(Wait());
     }
 
     public void FadeTo(float targetAlpha, float duration = 1f)
     {
         float currentAlpha = blackScreen.resolvedStyle.opacity;
         StartCoroutine(FadeScreen(currentAlpha, targetAlpha, duration));
+    }
+
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(FadeScreen(1f, 0f, 1f));
     }
 
     IEnumerator FadeScreen(float startAlpha, float targetAlpha, float duration)
