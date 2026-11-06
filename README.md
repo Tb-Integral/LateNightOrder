@@ -1,6 +1,6 @@
 # Late Night Order
 
-Late Night Order is a first-person Unity horror demo I built as a test assignment. You play a barista on the night shift. Preparing and serving coffee introduces the controls before a routine customer order gives way to a horror sequence with two possible endings.
+**One-week Unity test assignment.** I built a short first-person horror prototype over one week. You play a barista on the night shift. Preparing and serving coffee introduces the controls before a routine customer order gives way to a horror sequence with two possible endings.
 
 ![The coffee station and counter in Late Night Order](https://raw.githubusercontent.com/Tb-Integral/Tb-Integral/main/assets/late-night-order.jpg)
 
